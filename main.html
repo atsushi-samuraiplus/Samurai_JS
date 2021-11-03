@@ -35,7 +35,7 @@
             transition: all 300ms 0s ease;
         }
         #text{
-            color:yellow;
+            color:#ff4500;
         }
         .add-color{
             font-size:0.5em;
@@ -47,7 +47,7 @@
 <body>
     <p id="count">60</p>
     <div id="wrap">
-        <p id="text">「Space」キーでスタート！</p>
+        <p id="text">「 Space 」キー でスタート！</p>
     </div>
     <!--<button id="start">スタート</button>-->
 <script>
@@ -174,7 +174,7 @@ const rankCheck = (score,miss) => {
     }    
     
     //スコアの値を返す
-    return `${score}文字打てました！\n\n${text}\nミスタイプは、${miss}文字でした。\n\n正答率： ${correctAnswer(score,miss)}%です。\n\n 【OK】リトライ／【キャンセル】終了`;
+    return `${score}文字打てました！\n\n${text}\nミスタイプは ${miss}文字でした。\n\n正答率： ${correctAnswer(score,miss)}%です。\n\n 【OK】リトライ／【キャンセル】終了`;
 };
 
 
@@ -252,7 +252,7 @@ document.addEventListener('keypress', keypress_ivent);
 function keypress_ivent(e) {
     if(time === 60 && e.code === 'Space'){
         let countDown = 3;
-        //const text = document.getElementById('text');
+        
 	    const id_2 = setInterval(() => {
 	        p.textContent = countDown;
 	        countDown--;
