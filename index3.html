@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>タイピングアプリ</title>
+    <style>
+        body{
+            font-size:4em;
+             background:linear-gradient(to right,#00AAFF,#00FF6C);
+            text-align:center;
+        }
+        
+        #count{
+            margin:0;
+            font-weight:bold;
+            color:white;
+            text-shadow:3px 3px 0 #000;
+        }
+        
+        #wrap{
+            margin-top:50px;
+            padding:20px 10px;
+            background-color:#666;
+            border:2px solid white;
+            border-radius:10px;
+            font-weight:bold;
+            color:#fff;
+            text-shadow:3px 3px 0 #000;
+            box-shadow:5px 5px 3px #000;
+        }
+        
+        span{
+            transition: all 300ms 0s ease;
+        }
+        
+        .add-color{
+            font-size:0.5em;
+            color:#666;
+            text-shadow:none;
+            box-shadow:none;
+        }
+        
+    </style>
+</head>
+<body>
+    <p id="count">60</p>
+    <div id="wrap">
+        <p id="japanese_text"></p>
+        <p id="text"></p>
+    </div>
+    <button id="start">スタート</button>
+    <button id="stop">ストップ</button>
+<script>
+//必要なHTML要素の取得
+const wrap = document.getElementById('wrap');
+const start = document.getElementById('start');
+const stop = document.getElementById('stop');
+//複数のテキストを格納する配列
+const textLists = [
+    'Hello World',
+    'This is my App',
+    'How are you?',
+    'Today is sunny',
+    'I love JavaScript!',
+    'Good morning',
+    'I am Japanese',
+    'Let it be',
+    'Samurai',
+    'Typing Game',
+    'Information Technology',
+    'I want to be a programmer',
+    'What day is today?',
+    'I want to build a web app',
+    'Nice to meet you',
+    'Chrome Firefox Edge Safari',
+    'machine learning',
+    'Brendan Eich',
+    'John Resig',
+    'React Vue Angular',
+    'Netscape Communications',
+    'undefined null NaN',
+    'Thank you very much',
+    'Google Apple Facebook Amazon',
+    'ECMAScript',
+    'console.log',
+    'for while if switch',
+    'var let const',
+    'Windows Mac Linux iOS Android',
+    'programming'
+];
+
+//ランダムなテキストを格納する配列
+let checkTexts = [];
+
+
+//キーイベント＆入力判定処理
+const createText = () => {
+    const p = document.getElementById('text');
+    //配列のインデックス数からランダムな数値を生成する
+    const rnd = Math.floor(Math.random()*textLists.length);
+    
+    //p要素の中身を空っぽにする
+    p.textContent = '';
+    
+    //テキストを１文字ずつに分解してp要素に挿入する
+    //画面に表示するテキスト情報をcheckTexts配列に格納する
+    checkTexts = textLists[rnd].split('').map(value => {
+        //span要素を生成する
+        const span = document.createElement('span');
+        //span要素に配列の１文字ずつを当てはめる
+        span.textContent = value;
+        //span要素をp要素に追加していく
+        p.appendChild(span);
+        //１文字ずつcheckTextsに格納していく
+        return span;
+    })
+};
+
+let score = 0;
+let miss = 0;
+//キーボード処理
+const keyDown = e => {
+    //背景色のデフォルト値を設定する
+    wrap.style.backgroundColor = '#666';
+    
+    if(e.key === checkTexts[0].textContent) {
+      //add-colorクラスを付与する
+      checkTexts[0].className = 'add-color';
+      checkTexts[0].style.opacity = 0;
+      //配列から１文字を削除する
+      checkTexts.shift();
+      
+      //正しい入力の時だけスコアを加算する
+      score++;
+      
+      //最後まで入力したら新しいテキストを用意する
+      if(!checkTexts.length) createText();
+    //Shiftキーを押したときは色が変わらない
+    }else if(e.key === 'Shift') {
+      wrap.style.backgroundColor = '#666';
+    //タイプミスした時だけ背景色を赤色に変える
+    }else {
+      wrap.style.backgroundColor = 'red';
+      
+      miss++;
+    }
+};
+
+
+//ランク判定とメッセージ処理
+const rankCheck = (score,miss) => {
+    //テキストを格納する変数を作る
+    let text = '';
+    
+    //スコアに応じて小なるメッセージを変数textに格納する
+    if(score < 100) {
+        text = `あなたのランクは C です。\nBランクまであと ${100-score}文字です。`;
+    }else if(score < 200) {
+        text = `あなたのランクは B です。\nAランクまであと ${200-score}文字です。`;
+    }else if(score < 300) {
+        text = `あなたのランクは A です。\nSランクまであと ${300-score}文字です。`;
+    }else if (score >= 300) {
+        text = `あなたのランクは S です。\nおめでとうございます！`;
+    }
+    //生成したメッセージと一緒に文字列を返す
+    return `${score}文字打てました！\n\n${text}\nミスタイプは、${miss}文字でした。\n\n正答率： ${correctAnswer(score,miss)}%です。\n\n【OK】リトライ／【キャンセル】終了`;
+};
+
+
+const correctAnswer = () => {
+    const moover = 10 ** 2;
+    const answer = ((score / (score + miss)) * 100) * moover;
+    return Math.floor(answer)  / moover;
+};
+
+const keepUserScore = (score,miss) => {
+};
+
+//ゲームの終了処理
+const gameOver = id => {
+    clearInterval(id);
+    //スコアの値をrankcCheck()に渡してダイアログで結果を表示する
+    const result = confirm(rankCheck(score,miss));
+    
+    //OKボタンをクリックされたらリロードする
+    if(result) window.location.reload();
+    
+};
+
+// nakamura.ここで他のイベントでも使用できるようにid変数を宣言する
+let id;
+//タイマー処理
+const timer = () => {
+    //タイマーの初期値を設定
+    let time = 60;
+    
+    //タイマー要素を取得する
+    const count = document.getElementById('count');
+    // nakamura.idに時間をセット
+    id = window.setInterval(function(){
+        //カウントが０になったらタイマーを停止する
+        if(time <= 0) gameOver(id);
+        
+        //タイマーの表示を１ずつ減らしていく
+        count.textContent = time--;
+    
+        
+    },1000);
+};
+
+
+start.addEventListener('click',() => {
+    timer();
+    createText();
+    //「スタート」ボタンを非表示にする
+    start.style.display = 'none';
+    //キーボードのイベント処理
+    document.addEventListener('keydown',keyDown);
+});
+
+stop.addEventListener('click',() => {
+    start.style.display = 'inline';
+    stop.style.display = 'none';
+    // nakamura.timer関数の外で使用している変数のため、idが使用できる
+    window.clearInterval(id);
+});
+</script>
+</body>
+</html>
